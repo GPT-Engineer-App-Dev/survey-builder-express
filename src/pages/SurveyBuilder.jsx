@@ -14,7 +14,11 @@ const SurveyBuilder = () => {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const addQuestion = () => {
-    setQuestions([...questions, { type: selectedQuestionType, title: "", options: [] }]);
+    if (selectedQuestionType === "Single Select") {
+      setQuestions([...questions, { type: "Single Select", title: "", options: [""] }]);
+    } else {
+      setQuestions([...questions, { type: selectedQuestionType, title: "", options: [] }]);
+    }
   };
 
   const deleteQuestion = (index) => {
@@ -55,7 +59,8 @@ const SurveyBuilder = () => {
             {question.type === "Single Select" && (
               <RadioGroup>
                 {question.options.map((option, i) => (
-                  <RadioGroupItem key={i} value={option}>
+                  <div key={i} className="flex items-center mb-2">
+                    <RadioGroupItem value={option} />
                     <Input
                       placeholder="Option"
                       value={option}
@@ -64,8 +69,13 @@ const SurveyBuilder = () => {
                         newOptions[i] = e.target.value;
                         updateQuestion(index, { ...question, options: newOptions });
                       }}
+                      className="ml-2"
                     />
-                  </RadioGroupItem>
+                    <Button variant="destructive" onClick={() => {
+                      const newOptions = question.options.filter((_, idx) => idx !== i);
+                      updateQuestion(index, { ...question, options: newOptions });
+                    }}>Remove</Button>
+                  </div>
                 ))}
                 <Button onClick={() => updateQuestion(index, { ...question, options: [...question.options, ""] })}>Add Option</Button>
               </RadioGroup>
